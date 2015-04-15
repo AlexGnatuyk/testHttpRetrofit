@@ -92,7 +92,7 @@ public class Activity3 extends ActionBarActivity {
                     @Override
                     public void success(SignResponse signResponse, Response response){
 
-                        String name = response.getUsername();
+                        String token = response.getToken();
                         Intent intent = new Intent(this, SuccessLog.class);
                         startActivity(intent);
 
