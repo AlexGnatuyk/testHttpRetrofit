@@ -22,9 +22,10 @@ import com.androidquery.AQuery;
 public class SuccessLog extends ActionBarActivity {
 
     TextView text;
-    EditText uInfo;
+    TextView uInfo;
     SharedPreferences sPref;
     SharedPreferences sToken;
+    user [] users;
     String jwtToken;
 
     public class user {
@@ -73,7 +74,7 @@ public class SuccessLog extends ActionBarActivity {
 
     public interface Api{
         public static final String URL ="http://178.62.42.66/api/v1";
-        static final String USERS = "users/";
+        static final String USERS = "/users/";
 
 
         @GET(USERS)
@@ -81,12 +82,13 @@ public class SuccessLog extends ActionBarActivity {
 
     }
 
-    private void getUsers(){
+    private void getUsers(String jwtToken){
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(Api.URL)
                 .build();
         Api api = restAdapter.create(Api.class);
-        api.users(jwtToken);
+        users = api.users(jwtToken);
+        //api.users(jwtToken);
     }
 
     @Override
@@ -96,11 +98,25 @@ public class SuccessLog extends ActionBarActivity {
         AQuery aq = new AQuery(this);
         aq.id(R.id.image1).image("http://178.62.42.66/static/images/avatars/default_avatar.png");
         text = (TextView) findViewById(R.id.textView5);
+        uInfo = (TextView) findViewById(R.id.textView6);
+
         sPref = getSharedPreferences("MyPref",MODE_PRIVATE);
         String savedText = sPref.getString("token","");
         jwtToken = "JWT "+savedText;
-        getUsers();
-        uInfo = users[0].getUsername();
+
+
+        Runnable runnable = new Runnable() {
+            public void run() {
+
+                getUsers(jwtToken);
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+
+
+       // user [] users;
+        uInfo.setText(users[0].getUsername()); //users[0].getUsername();
         text.setText(savedText);
 
 
